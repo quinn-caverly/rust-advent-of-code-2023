@@ -29,8 +29,6 @@ fn main() {
 
             let (exists, word_index, word_val) = find_string_digit(line, false);
 
-            println!("word-index: {}, word-val: {}, dig_index: {}, dig_val: {}", word_index, word_val, dig_index, dig_val);
-
             if exists {
                 if dig_index > word_index {
                     dig_val
