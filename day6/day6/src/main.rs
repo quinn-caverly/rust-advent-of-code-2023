@@ -1,27 +1,16 @@
 use std::{fs, iter::zip};
 
 fn main() {
-    let (time_vec, distances_vec) = parse_input();
+    let (time, distance) = parse_input();
 
-    let mut vals = Vec::new();
-    for (time, distance) in zip(time_vec, distances_vec) {
-        vals.push(calculate_ways(time, distance));
-    }
+    println!("{}, {}", time, distance);
 
-    let mut ans = if vals.len() == 0 {
-        0
-    } else {
-        1
-    };
+    let val = calculate_ways(time, distance);
 
-    for val in vals {
-        ans *= val;
-    }
-
-    println!("{}", ans);
+    println!("{}", val);
 }
 
-fn parse_input() -> (Vec<u32>, Vec<u32>){
+fn parse_input() -> (u64, u64){
     let contents = fs::read_to_string("../input.txt").unwrap();
 
     let mut lines = contents.lines();
@@ -31,26 +20,29 @@ fn parse_input() -> (Vec<u32>, Vec<u32>){
     let distances_str = lines.next().unwrap();
     let distances = distances_str.strip_prefix("Distance:").unwrap();
 
-    let mut time_vec: Vec<u32> = Vec::new();
-    for time in times.split(" ") {
-        match time.parse::<u32>() {
-            Ok(x) => time_vec.push(x),
-            Err(_) => (),
+    let mut final_time_str: String = "".to_string();
+    for ch in times.chars() {
+        match ch.to_digit(10) {
+            Some(_) => final_time_str = final_time_str + &ch.to_string(),
+            None => (),
         }
     }
 
-    let mut distance_vec: Vec<u32> = Vec::new();
-    for distance in distances.split(" ") {
-        match distance.parse::<u32>() {
-            Ok(x) => distance_vec.push(x),
-            Err(_) => (),
+    let mut final_distance_str: String = "".to_string();
+    for ch in distances.chars() {
+        match ch.to_digit(10) {
+            Some(_) => final_distance_str = final_distance_str + &ch.to_string(),
+            None => (),
         }
     }
 
-    (time_vec, distance_vec)
+    let time = final_time_str.parse::<u64>().unwrap();
+    let distance = final_distance_str.parse::<u64>().unwrap();
+
+    (time, distance)
 }
 
-fn calculate_ways(time: u32, distance: u32) -> u32 {
+fn calculate_ways(time: u64, distance: u64) -> u32 {
     let mut ways = 0;
 
     let mut time_held = 0;
@@ -71,7 +63,7 @@ fn calculate_ways(time: u32, distance: u32) -> u32 {
     ways
 }
 
-fn calculate_distance(time_held: u32, total_time: u32) -> u32 {
+fn calculate_distance(time_held: u64, total_time: u64) -> u64 {
     // time_held is also the velocity
     let velocity = time_held;
     velocity * (total_time-time_held)
