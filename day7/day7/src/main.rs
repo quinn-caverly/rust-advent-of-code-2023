@@ -27,7 +27,7 @@ fn compare_hands(a: &Hand, b: &Hand) -> std::cmp::Ordering {
         cur += 1;
     }
     value_map.insert('T', 10);
-    value_map.insert('J', 11);
+    value_map.insert('J', 1);
     value_map.insert('Q', 12);
     value_map.insert('K', 13);
     value_map.insert('A', 14);
@@ -64,7 +64,16 @@ fn compare_hands(a: &Hand, b: &Hand) -> std::cmp::Ordering {
     }
 }
 
+// there will be various conditions for which hands can be upgraded if there are jokers
 fn get_type_rank(hand: &Hand) -> u32 {
+    let mut joker_num = 0;
+    for ch in &hand.chs {
+        if ch == &'J' {
+            joker_num += 1;
+        }
+    }
+
+
     // 5 of a kind is highest with val 7
     let mut cur_val = 7;
     if check_if_five_of_a_kind(hand) {
@@ -73,26 +82,56 @@ fn get_type_rank(hand: &Hand) -> u32 {
 
     cur_val -= 1;
     if check_if_four_of_a_kind(hand) {
+        // if 4 of a kind and more than 1 joker, either JJJJA or AAAAJ, = 5 of a kind
+        if joker_num > 0 {
+            return cur_val + 1;
+        }
         return cur_val;
     }
 
     cur_val -= 1;
     if check_if_full_house(hand) {
+        // if more than 0 joker, then 5 of a kind
+        if joker_num > 0 {
+            return cur_val + 2;
+        }
         return cur_val;
     }
 
     cur_val -= 1;
     if check_if_three_of_a_kind(hand) {
+        // if at least 1 joker, then 4 of a kind. Either: JJJAB or AAAJC
+        if joker_num > 0 {
+            return cur_val + 2;
+        }
         return cur_val;
     }
 
     cur_val -= 1;
     if check_if_two_pair(hand) {
+        // either: AABBJ or JJBBC
+        // 4 of a kind
+        if joker_num == 2 {
+            return cur_val + 3;
+        // full house
+        } else if joker_num == 1 {
+            return cur_val + 2;
+        }
         return cur_val;
     }
 
     cur_val -= 1;
     if check_if_one_pair(hand) {
+        // either JJABC or AAJBC, 3 of a kind
+        if joker_num > 0 {
+            return cur_val + 2;
+        }
+        return cur_val;
+    }
+
+    // now in a situation where there are no natural pairs, if exactly 1 joker (only option), then
+    // it is not one pair
+    if joker_num == 1 {
         return cur_val;
     }
 
