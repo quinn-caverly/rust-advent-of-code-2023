@@ -10,8 +10,15 @@ fn main() {
     let maps = parse_maps(&mut lines);
 
     let mut final_seeds: Vec<u64> = Vec::new();
+    let total_seeds = seeds.len();
+    let mut done_seeds = 0;
     for seed in seeds {
         final_seeds.push(calculate_final_val(seed, &maps));
+        done_seeds += 1;
+
+        if done_seeds % 100000 == 0 {
+            println!("{}", done_seeds/total_seeds);
+        }
     }
 
     let minimum = final_seeds.iter().min().unwrap();
@@ -108,8 +115,23 @@ fn parse_seeds(lines: &mut Lines<'_>) -> Vec<u64> {
     let mut seed_line = lines.next().unwrap();
     seed_line = &seed_line[7..];
 
+    let mut on_start: bool = true;
+    let mut start: u64 = 0;
+    let mut add: u64;
     for seed in seed_line.split(" ") {
         let seed_num = seed.parse::<u64>().unwrap();
+
+        if on_start {
+            start = seed_num;
+            on_start = false;
+        } else {
+            add = seed_num;
+            on_start = true;
+
+            for i in start..start+add {
+                seeds.push(i);
+            }
+        }
         seeds.push(seed_num);
     }
 

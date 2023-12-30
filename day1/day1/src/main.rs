@@ -1,5 +1,8 @@
 use std::fs;
 
+fn test() {
+}
+
 fn main() {
     let contents = fs::read_to_string("../input.txt").unwrap();
 
@@ -9,7 +12,6 @@ fn main() {
         let start = {
             let (dig_index, dig_val) = find_digit_digit(line);
             let (exists, word_index, word_val) = find_string_digit(line, true);
-
 
             if exists {
                 if dig_index < word_index {
